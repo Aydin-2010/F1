@@ -1,1 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code Scanner from Image</title>
+</head>
+<body>
+<h2>Upload an Image with a QR Code</h2>
+<input type="file" id="fileInput" accept="image/*">
+<p id="result"></p>
 
+<script type="module">
+  import { BrowserQRCodeReader } from 'https://cdn.jsdelivr.net/npm/@zxing/browser@0.0.11/esm/index.min.js';
+
+  const reader = new BrowserQRCodeReader();
+  const fileInput = document.getElementById('fileInput');
+  const resultText = document.getElementById('result');
+
+  fileInput.addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Convert file to an ImageBitmap
+    const imgBitmap = await createImageBitmap(file);
+
+    try {
+      const result = await reader.decodeFromImage(imgBitmap);
+      resultText.textContent = "QR Code Text: " + result.getText();
+    } catch (err) {
+      resultText.textContent = "No QR code found in this image.";
+      console.error(err);
+    }
+  });
+</script>
+</body>
+</html>
